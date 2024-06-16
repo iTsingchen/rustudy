@@ -7,7 +7,7 @@ fn par_match(open: char, close: char) -> bool {
     OPENS.find(open) == CLOSES.find(close)
 }
 
-fn par_checker(par: &str) -> bool {
+pub fn par_checker(par: &str) -> bool {
     let mut stack = Stack::new();
 
     for c in par.chars() {
