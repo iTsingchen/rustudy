@@ -66,22 +66,22 @@ impl SpecTransform<&Contrast> for Photon {
 }
 
 impl SpecTransform<&Flipv> for Photon {
-    fn transform(&mut self, op: &Flipv) {
+    fn transform(&mut self, _op: &Flipv) {
         transform::flipv(&mut self.0);
     }
 }
 
 impl SpecTransform<&Fliph> for Photon {
-    fn transform(&mut self, op: &Fliph) {
+    fn transform(&mut self, _op: &Fliph) {
         transform::fliph(&mut self.0);
     }
 }
 
 impl SpecTransform<&Filter> for Photon {
     fn transform(&mut self, op: &Filter) {
-        match filter::Filter::from_i32(op.filter) {
-            Some(filter::Filter::Unspecified) => {}
-            Some(f) => filters::filter(&mut self.0, f.to_str().unwrap()),
+        match filter::Filter::try_from(op.filter) {
+            Ok(filter::Filter::Unspecified) => {}
+            Ok(f) => filters::filter(&mut self.0, f.to_str().unwrap()),
             _ => {}
         }
     }
@@ -89,12 +89,12 @@ impl SpecTransform<&Filter> for Photon {
 
 impl SpecTransform<&Resize> for Photon {
     fn transform(&mut self, op: &Resize) {
-        let img = match resize::ResizeType::from_i32(op.rtype).unwrap() {
+        let img = match resize::ResizeType::try_from(op.rtype).unwrap() {
             resize::ResizeType::Normal => transform::resize(
                 &mut self.0,
                 op.width,
                 op.height,
-                resize::SampleFilter::from_i32(op.filter).unwrap().into(),
+                resize::SampleFilter::try_from(op.filter).unwrap().into(),
             ),
             resize::ResizeType::SeamCarve => {
                 transform::seam_carve(&mut self.0, op.width, op.height)
